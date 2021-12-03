@@ -181,6 +181,7 @@ echo $CONTRACT_NAME
 ```
 
 Call result:
+
 ![CONTRACT_NAME](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/q3am1ltlautaytu8tlh1.png)
 
 One more thing to do is to set our testnet account as `ID` env variable:
@@ -191,6 +192,7 @@ echo $ID
 ```
 
 Call result:
+
 ![Export $ID](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qws4oyfacqjsqiucsont.png)
 
 If you want to pass a method argument using `near-cli` you can pass a json string afther the contract name.
