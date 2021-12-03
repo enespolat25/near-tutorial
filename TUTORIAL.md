@@ -16,7 +16,7 @@ The easiest way to get started is using [npx - Node Package Execute](https://www
 
 ### Install `npx` as a global dependency
 
-```
+```bash
 npm install -g npx
 ```
 
@@ -26,7 +26,7 @@ Let's generate the new project. Go to a directory where you want to have your pr
 
 For near dapps there is a `npx` binary [create-near-app](https://github.com/near/create-near-app). It has some options to choose what type of frontend you are going to use and also what type of smart contract you are going to use. Here are the option you can use:
 
-```
+```bash
 ➜  ~ npx create-near-app -h
 create-near-app <projectDir>
 
@@ -48,7 +48,7 @@ For this tutorial we are going to use `react` as a frontend and `assemblyscript`
 
 Open terminal and execute the command:
 
-```
+```bash
 npx create-near-app near-tutorial --frontend=react --contract=assemblyscript
 ```
 
@@ -57,7 +57,7 @@ Wait a bit to download everything and when it finish you will see something like
 
 In general our new project is ready to be started, the only thing you still need is to login in your near testnet account you should have create before. To do this open the terminal and call:
 
-```
+```bash
 near login
 ```
 
@@ -65,7 +65,7 @@ It should open the browser where you approve login, after that you are ready to 
 
 That's it we have created our project, now we can get hands dirty in the code. Open the project in you favourite IDE, the recommended option is using free [VS Code](https://code.visualstudio.com/):
 
-```
+```bash
 cd near-tutorial
 code .
 ```
@@ -86,7 +86,7 @@ Our newly created project has several main places:
 
 First of all we need to install dependencies using `yarn` command:
 
-```
+```bash
 yarn
 ```
 
@@ -94,7 +94,7 @@ It can take some minutes depending on your network, be patient :)
 
 After that we can already run the project in the dev environment. You can use one simple command:
 
-```
+```bash
 yarn dev
 ```
 
@@ -128,27 +128,27 @@ Smart contract is located in `contract/assembly/index.ts`:
 
 It has the default message which we saw in the browser right after the opening:
 
-```
-const DEFAULT_MESSAGE = 'Hello'
+```javascript
+const DEFAULT_MESSAGE = "Hello";
 ```
 
 And it has two methods `getGreeting(accountId: string)` and `setGreeting(message: string)`
 
 ### Mutating method `setGreeting`
 
-```
+```javascript
 export function setGreeting(message: string): void {
-  const accountId = Context.sender
+  const accountId = Context.sender;
   // Use logging.log to record logs permanently to the blockchain!
-  logging.log(`Saving greeting "${message}" for account "${accountId}"`)
-  storage.set(accountId, message)
+  logging.log(`Saving greeting "${message}" for account "${accountId}"`);
+  storage.set(accountId, message);
 }
 ```
 
 As you can see this method contains one argument `message` which was send when we approved the transaction. Inside the method we are extracting a the sender accountId from the `Context` class:
 
-```
-const accountId = Context.sender
+```javascript
+const accountId = Context.sender;
 ```
 
 Context is a class provided from the `near-sdk-as` and it has some useful data you may need in your during the development:
@@ -159,8 +159,8 @@ You may find the whole class clicking on it in IDE or you can also check it out 
 
 After extracting the accountId we are using another class `storage` and its method `storage.set`:
 
-```
-storage.set(accountId, message)
+```javascript
+storage.set(accountId, message);
 ```
 
 Storage is a key-value store that is persisted on the NEAR blockchain. Read the [docs](https://near.github.io/near-sdk-as/classes/_sdk_core_assembly_storage_.storage-1.html) to check all the available methods.
@@ -175,7 +175,7 @@ To make is easy we will set the `CONTRACT_NAME` env variable, and to do so we ca
 
 Call this in the terminal and check if you have exported the variable:
 
-```
+```bash
 source neardev/dev-account.env
 echo $CONTRACT_NAME
 ```
@@ -185,7 +185,7 @@ Call result:
 
 One more thing to do is to set our testnet account as `ID` env variable:
 
-```
+```bash
 export ID=your-account.testnet
 echo $ID
 ```
@@ -196,7 +196,7 @@ Call result:
 If you want to pass a method argument using `near-cli` you can pass a json string afther the contract name.
 Now we can set the greeting using `near-cli`:
 
-```
+```bash
 near call $CONTRACT_NAME setGreeting '{"message": "Near CLI Greeting"}' --accountId $ID
 ```
 
@@ -207,19 +207,19 @@ It will call the smart contract and print you the transaction id:
 
 `getGreeting` method is a readonly method, which mean we cannot use the `context.sender` to get the account id, its only accessible in mutating state calls:
 
-```
+```javascript
 export function getGreeting(accountId: string): string | null {
   // This uses raw `storage.get`, a low-level way to interact with on-chain
   // storage for simple contracts.
   // If you have something more complex, check out persistent collections:
   // https://docs.near.org/docs/concepts/data-storage#assemblyscript-collection-types
-  return storage.get<string>(accountId, DEFAULT_MESSAGE)
+  return storage.get < string > (accountId, DEFAULT_MESSAGE);
 }
 ```
 
 It is doing one call to `storage` to get the greeting from the smart contract storage or the default method, if there is no message in the storage for the account we use. Readonly methods are using `view` instead of `call` we used for `setGreeting`:
 
-```
+```bash
 near view $CONTRACT_NAME getGreeting "{\"accountId\": \"$ID\"}"
 ```
 
@@ -228,7 +228,7 @@ Boom, we can see the greeting we set in the previous step:
 ![getGreeting from near cli](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/v3f0fzt4z9ufa4qm2rpq.png)
 
 Let go to the browser and refresh the page to verify that our message is also there. If everything goes well you will see this after refresh:
-![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zuvsqule4mwwwa5xiz0k.png)
+![Check browset](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zuvsqule4mwwwa5xiz0k.png)
 
 ## How React connects with Near
 
@@ -240,13 +240,13 @@ In our react application we have `two` configuration files where we connect to t
 
 Inside `config.js` we define our contract name, which is also taken from environment variable :
 
-```
-const CONTRACT_NAME = process.env.CONTRACT_NAME ||'near-tutorial'
+```javascript
+const CONTRACT_NAME = process.env.CONTRACT_NAME || "near-tutorial";
 ```
 
 And we also have `getConfig` function with the blockchain configuration for `testnet`, `mainnet` and some other environments:
 
-```
+```javascript
 function getConfig(env) {
   switch (env) {
 
@@ -276,31 +276,40 @@ function getConfig(env) {
 
 The next file is `utils.js` where we use the config from `config.js`, wand the main is `initContract()` method, where we connect to the blockchain `rpc` and list all the available methods in our contract:
 
-```
-import { connect, Contract, keyStores, WalletConnection } from 'near-api-js'
-import getConfig from './config'
+```javascript
+import { connect, Contract, keyStores, WalletConnection } from "near-api-js";
+import getConfig from "./config";
 
-const nearConfig = getConfig(process.env.NODE_ENV || 'development')
+const nearConfig = getConfig(process.env.NODE_ENV || "development");
 
 // Initialize contract & set global variables
 export async function initContract() {
   // Initialize connection to the NEAR testnet
-  const near = await connect(Object.assign({ deps: { keyStore: new keyStores.BrowserLocalStorageKeyStore() } }, nearConfig))
+  const near = await connect(
+    Object.assign(
+      { deps: { keyStore: new keyStores.BrowserLocalStorageKeyStore() } },
+      nearConfig
+    )
+  );
 
   // Initializing Wallet based Account. It can work with NEAR testnet wallet that
   // is hosted at https://wallet.testnet.near.org
-  window.walletConnection = new WalletConnection(near)
+  window.walletConnection = new WalletConnection(near);
 
   // Getting the Account ID. If still unauthorized, it's just empty string
-  window.accountId = window.walletConnection.getAccountId()
+  window.accountId = window.walletConnection.getAccountId();
 
   // Initializing our contract APIs by contract name and configuration
-  window.contract = await new Contract(window.walletConnection.account(), nearConfig.contractName, {
-    // View methods are read only. They don't modify the state, but usually return some value.
-    viewMethods: ['getGreeting'],
-    // Change methods can modify the state. But you don't receive the returned value when called.
-    changeMethods: ['setGreeting'],
-  })
+  window.contract = await new Contract(
+    window.walletConnection.account(),
+    nearConfig.contractName,
+    {
+      // View methods are read only. They don't modify the state, but usually return some value.
+      viewMethods: ["getGreeting"],
+      // Change methods can modify the state. But you don't receive the returned value when called.
+      changeMethods: ["setGreeting"],
+    }
+  );
 }
 ```
 
@@ -308,7 +317,7 @@ We expand the global `window` object with the methods we will be using to intera
 
 In `src/App.js` you can see how the contract is used:
 
-```ts
+```javascript
 // The useEffect hook can be used to fire side-effects during render
 // Learn more: https://reactjs.org/docs/hooks-intro.html
 React.useEffect(
@@ -341,7 +350,7 @@ Let's expand our smart contract with some properties, like date when the most re
 
 In VSCode open `contract/assemble/index.ts` and add replace `setGreeting` method with the following:
 
-```
+```javascript
 export function setGreeting(message: string): void {
   const accountId = Context.sender;
   const timestamp = Context.blockTimestamp;
@@ -361,26 +370,28 @@ export function setGreeting(message: string): void {
 
 We have added two lines, first one is getting the block timestamp, which is provided in nanoseconds:
 
-```
+```javascript
 const timestamp = Context.blockTimestamp;
 ```
 
-Seconds one convert set the storage to contains last update date of the greeting:
+Second one - convert set the storage to contains last update date of the greeting:
 
-```
-  storage.set(
-    `${accountId}_last_updated`,
-    `${new Date(timestamp / 1000000).toDateString()} ${new Date(
-      timestamp / 1000000
-    ).toTimeString()}`
-  );
+```javascript
+storage.set(
+  `${accountId}_last_updated`,
+  `${new Date(timestamp / 1000000).toDateString()} ${new Date(
+    timestamp / 1000000
+  ).toTimeString()}`
+);
 ```
 
 Then let's add the method to get last update value from the smart contract using the `${accountId}_last_updated` key:
 
-```
+```javascript
 export function getUpdateDate(accountId: string): string | null {
-  return storage.get<string>(`${accountId}_last_updated`,"No custom greeting.");
+  return (
+    storage.get < string > (`${accountId}_last_updated`, "No custom greeting.")
+  );
 }
 ```
 
@@ -394,13 +405,13 @@ First of all we need to add them to the contract definition inside `src/utils.js
 
 Then open `src/App.js` and add a new state variable to store our update date:
 
-```
-const [updateDate, setUpdateDate] = React.useState()
+```javascript
+const [updateDate, setUpdateDate] = React.useState();
 ```
 
 After that inside `useEffect` hook where we are getting the greeting add one more call to get the `getLastUpdate` and when we fetch the value we can update our `updateDate` state hook by calling `setUpdateDate`. The code we add should look as following:
 
-```
+```javascript
 window.contract
   .getUpdateDate({ accountId: window.accountId })
   .then((greetingUpdateDate) => {
@@ -414,7 +425,7 @@ And here how the file should look after we added those changes:
 
 And the last part is to show the updateDate in the UI. Find the `h1` tag where you show current greeting and add some other tag for example `h3` after to show the last update date.
 
-```
+```javascript
 <h3 style={{ textAlign: "center" }}>Last Update: {updateDate}</h3>
 ```
 
